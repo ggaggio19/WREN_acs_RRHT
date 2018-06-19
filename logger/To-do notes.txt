@@ -1,0 +1,17 @@
+allunga timeout a 300s
+fai 2 step enable:
+	- canale è aperto -> puoi fare engage ma non muovere nulla
+	- aperto e engaged -> puoi fare tutto
+	e viceversa
+
+ristruttura gli eventi rari usando una queue
+	queue viene creata prima dei canali, variabile globale
+	le funzioni dei canali aggiungono comandi nella queue quando si connettono e disconnettono
+	la gui controlla la queue e se c'è qualcosa lo fa
+	"eventi rari" sono roba tipo stati non valori
+
+ristruttura tutto in maniera più modulare (tanti auguri)
+
+sistema questione della lista di roba loggata che ha dimensioni del cazzo
+
+stretch objective -> fai apertura/chiusura canali interattiva
