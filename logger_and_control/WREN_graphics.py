@@ -276,7 +276,7 @@ class Gui(object):
                                                                    sticky=(tkinter.S, tkinter.W))
         self.dc2_pos = tkinter.StringVar()
         self.dc2_pos.set('%.2f' % 0)
-        ttk.Label(self.dc2frame,textvariable = self.dc2_pos).grid(column=2,row=3,columnspan = 2, sticky=(tkinter.S,tkinter.E))
+        ttk.Label(self.dc2frame,textvariable = self.dc2_pos).grid(column=2,row=2,columnspan = 2, sticky=(tkinter.S,tkinter.E))
 
         '''Current status'''
         self.dc2state_lab = ttk.Label(self.dc2frame,text = "Unplugged",background="red")
@@ -311,11 +311,11 @@ class Gui(object):
             valsinks[vcount].set('%.2f' % sources[vcount])
             vcount = vcount + 1
 
+        self.dc1_pos.set('%.2f' % WREN_shared.DC1_pos_feedback)
+        self.dc2_pos.set('%.2f' % WREN_shared.DC2_pos_feedback)
+
         self.step_pos.set('%.2f' % WREN_shared.stepper_position)
 
-        ''' If weighpad is not connected, try connection'''
-        #if not WREN_shared.WFE_IsConnected:
-            #self.WFEHandler.connect_WFE()
 
         ''' Now empty the queue'''
         while not self.queuein.empty():
@@ -346,10 +346,8 @@ class Gui(object):
             elif posid == "wfe":
                 if cmd_spec:
                     labsinks[9].config(background="green")
-                    #self.link_wp.state(['disabled'])
                 else:
                     labsinks[9].config(background="red")
-                    #self.link_wp.state(['!disabled'])
             else:
                 if cmd_spec:
                     print(posid)
@@ -496,7 +494,3 @@ class Gui(object):
 
     def LinkWFE_callback(self):
         self.WFEHandler.connect_WFE()
-
-
-
-
