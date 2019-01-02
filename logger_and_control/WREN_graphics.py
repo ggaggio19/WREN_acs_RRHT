@@ -2,8 +2,12 @@ import tkinter
 from tkinter import ttk
 import threading
 import WREN_shared
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from WREN_animation_func import animate
+from WREN_animation_func import frange
+import random
 
-bue
 class Gui(object):
     def __init__(self, allvalues, allstates, stepperchan, log_in,queuein, WFEHandler):
         ''' Variables links'''
@@ -25,6 +29,16 @@ class Gui(object):
         ''' Main window'''
         self.root = tkinter.Tk()
         self.root.title("Test monitor")
+
+        self.root.protocol("WM_DELETE_WINDOW", self._delete_window)
+
+        ''' Plots window'''
+        self.plotfigure = plt.figure()
+        #self.plotfigure.canvas.mpl_connect('close_event', self.plot_handle_close)
+        self.plotaxes = []
+        for i in range(0,4):
+            self.plotaxes.append(self.plotfigure.add_subplot(4,1,i+1))
+        #self.plotaxes = self.plotfigure.add_subplot(111)
 
         '''Data logger frame'''
         ttk.Label(self.root, text="Data Logger").grid(column=0, row=0, sticky=(tkinter.S, tkinter.W))
@@ -298,8 +312,36 @@ class Gui(object):
         ''' Setup updater functions '''
         self.root.after(500,self.updater)
 
+        '''#################################################################################################
+        Set up real time data plotting
+        ################################################################################################'''
+        self.p_x_len = 100
+        self.p_y_range = [-10, 10]
+        self.p_interval = 100
+        self.timevec = list(frange(0,(self.p_x_len-1)*self.p_interval/1000,self.p_interval/1000))
+        self.plotvecs = [0] * self.p_x_len
+        self.randval = [0]
+        self.plotlines =[]
+        self.anis = []
+        for i in range(len(self.plotaxes)):
+            self.plotaxes[i].set_ylim(self.p_y_range)
+            a, = self.plotaxes[i].plot(self.timevec,self.plotvecs)
+            self.plotlines.append(a)
+            self.anis.append(animation.FuncAnimation(self.plotfigure,
+                                           animate,
+                                           fargs=(self.plotvecs,
+                                                  self.randval,
+                                                  self.p_x_len,
+                                                  self.plotlines[i]),
+                                           interval = self.p_interval,
+                                           blit = True))
+
+
+        plt.show()
+
         ''' Start GUI'''
-        self.mainframe.mainloop()
+        self.root.mainloop()
+
         
     def updater(self):
         valsinks = [self.DispVal01, self.DispVal02, self.DispVal03, self.DispVal04, self.DispVal05, self.DispVal11, self.DispVal12, self.DispVal13, self.DispVal14, self.DispVal15]
@@ -315,6 +357,7 @@ class Gui(object):
         self.dc2_pos.set('%.2f' % WREN_shared.DC2_pos_feedback)
 
         self.step_pos.set('%.2f' % WREN_shared.stepper_position)
+        self.randval[0] = random.randint(-10,10)
 
 
         ''' Now empty the queue'''
@@ -357,7 +400,7 @@ class Gui(object):
 
         self.root.after(500,self.updater)
 
-        
+
     def startTR_callback(self):
         self.log.start_TR_shot(timeout=300)
         self.statusSTR.set("Transient log started")
@@ -494,3 +537,16 @@ class Gui(object):
 
     def LinkWFE_callback(self):
         self.WFEHandler.connect_WFE()
+
+    def _delete_window(self):
+        try:
+            plt.close(self.plotfigure)
+            self.root.destroy()
+        except:
+            pass
+
+    def plot_handle_close(self):
+        try:
+            self.root.destroy()
+        except:
+            pass
