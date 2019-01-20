@@ -3,7 +3,6 @@ from tkinter import ttk
 import threading
 import WREN_shared
 
-bue
 class Gui(object):
     def __init__(self, allvalues, allstates, stepperchan, log_in,queuein, WFEHandler):
         ''' Variables links'''
