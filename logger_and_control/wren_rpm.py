@@ -47,39 +47,42 @@ def getRPM(rate=30, comp=3):
 #	print 1
 	while rpm_is_ctc == 1:	
 
-		if (time.time() - time1) > timestep:
-			try:
+		time.sleep(timestep * 0.8)
 
-				rpm_all = ser.read(ser.inWaiting())
+		while (time.time() - time1) < timestep:
+			pass
+		try:
+			rpm_all = ser.read(ser.inWaiting())
 #				print rpm_all
-				if '\n' in rpm_all:	
-					rpm_list = rpm_all.split('\n') # Guaranteed to have at least 2 entries
+			if '\n' in rpm_all:	
+				rpm_list = rpm_all.split('\n') # Guaranteed to have at least 2 entries
 #					print('Time: ' + str(time1))
-				else:
-					rpm_list = [rpm, rpm]
-				rpm = rpm_list[-2]
-#				rpm = ser.readline()  Not robust: keep waiting
-				try:
-					rpm = float(rpm)
-					print('RPM ' + str(rpm))
-					print('Time: ' + str(time1))
-					f.write(str(rpm) + ',' + str(time1) + '\n')
-				except ValueError as e:
-					rpm = 0
-			except serial.SerialException:
-				rpm_is_ctc = 0
-			except TypeError as e:
-				ser.close()
-				rpm_is_ctc = 0
-			except IOError as e:
-				ser.close()
-				rpm_is_ctc = 0
 			else:
-				rpm_is_ctc = 1
+				rpm_list = [rpm, rpm]
+			rpm = rpm_list[-2]
+#				rpm = ser.readline()  Not robust: keep waiting
+			try:
+				rpm = float(rpm)
+				print('RPM ' + str(rpm))
+				print('Time: ' + str(time1))
+				f.write(str(rpm) + ',' + str(time1) + '\n')
+			except ValueError as e:
+				rpm = 0
+		except serial.SerialException:
+			rpm_is_ctc = 0
+		except TypeError as e:
+			ser.close()
+			rpm_is_ctc = 0
+		except IOError as e:
+			ser.close()
+			rpm_is_ctc = 0
+		else:
+			rpm_is_ctc = 1
 
-			time1 = time.time()
+
+		time1 = time.time()
 
 	f.close()
 	
-getRPM(10,3)
+getRPM(30,3)
 print(rpm_is_ctc)
