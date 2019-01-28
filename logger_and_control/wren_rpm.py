@@ -19,12 +19,15 @@ def getRPM(rate=30, comp=3):
      
 	timestep = 1/float(rate)
 
+#	print 1
 	try:
 		'''
 		First line is for Mac. Second line for Win.
 		'''
-		ser = serial.Serial(port='/dev/tty.usbmodem1421',baudrate=115200)
+#		print 1
+		ser = serial.Serial(port='/dev/tty.usbmodem1411',baudrate=115200)
 #	    ser = serial.Serial(port='COM'+str(comp),baudrate=115200)
+#		print 1
 	except serial.SerialException:
 	    rpm_is_ctc = 0
 	    return None
@@ -40,17 +43,20 @@ def getRPM(rate=30, comp=3):
 	time1 = time.time()
 
 	rpm_all = ''
-
+	rpm = 0
+#	print 1
 	while rpm_is_ctc == 1:	
 
 		if (time.time() - time1) > timestep:
 			try:
+
 				rpm_all = ser.read(ser.inWaiting())
-				print rpm_all
+#				print rpm_all
 				if '\n' in rpm_all:	
 					rpm_list = rpm_all.split('\n') # Guaranteed to have at least 2 entries
+#					print('Time: ' + str(time1))
 				else:
-					rpm_list = [0, 0]
+					rpm_list = [rpm, rpm]
 				rpm = rpm_list[-2]
 #				rpm = ser.readline()  Not robust: keep waiting
 				try:
@@ -75,5 +81,5 @@ def getRPM(rate=30, comp=3):
 
 	f.close()
 	
-getRPM(30,3)
+getRPM(10,3)
 print(rpm_is_ctc)
