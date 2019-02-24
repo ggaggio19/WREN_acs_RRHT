@@ -20,6 +20,9 @@ class WFEReaderThread (threading.Thread):
       while True:
       
         try:
+            '''
+            Version 1 G. Gaggini
+            '''
             ser = serial.Serial(port='COM' + str(self.comp), baudrate=9600)
             self.isconnected.set()
             WREN_shared.WFE_IsConnected = True
