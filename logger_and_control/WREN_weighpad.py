@@ -6,13 +6,14 @@ import threading
 
 class WFEReaderThread (threading.Thread):
 
-    def __init__(self,rate, comp, queue,isconnected):
+    def __init__(self,rate, comp, queue,isconnected,place):
         super().__init__()
         self.rate = rate
         self.comp = comp
         self.queue = queue
         self.isconnected = isconnected
         self.daemon = True
+        self.place = place
 
     def run(self):
       timestep = 1 / float(self.rate)
@@ -65,7 +66,7 @@ class WFEReaderThread (threading.Thread):
                     w2 = float(weight[10:15])
                 except ValueError as e:
                     w2 = 0
-                WREN_shared.ch_data[len(WREN_shared.ch_data)-1] = 0
+                WREN_shared.ch_data[self.place] = 0
             else:
                 time2 = time.clock()
                 if (time2 - time1) > timestep:
@@ -74,24 +75,25 @@ class WFEReaderThread (threading.Thread):
                         w2 = float(weight[9:14])
                     except ValueError as e:
                         w2 = 0
-                    WREN_shared.ch_data[len(WREN_shared.ch_data) - 1] = (w1 - w2) / (time2 - time1)
+                    WREN_shared.ch_data[self.place] = (w1 - w2) / (time2 - time1)
                     time1 = time2
         
-        time.sleep(0.5)
+        time.sleep(0.5*timestep)
 
 
 class weighpad_handler:
 
-    def __init__(self,rate, comp, queue):
+    def __init__(self,rate, comp, queue, place):
         self.rate = rate
         self.comp = comp
         self.queue = queue
         self.isConnected = threading.Event()
+        self.place = place
 
 
     def connect_WFE(self):
         self.isConnected.clear()
-        self.reader = WFEReaderThread(self.rate, self.comp, self.queue,self.isConnected)
+        self.reader = WFEReaderThread(self.rate, self.comp, self.queue,self.isConnected, self.place)
         self.reader.start()
 
 

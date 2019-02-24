@@ -12,6 +12,7 @@ import WREN_shared
 from WREN_graphics import Gui
 import queue
 import WREN_weighpad
+import WREN_revcounter
 
 
 '''Get system stuff '''
@@ -421,8 +422,13 @@ except PhidgetException as e:
 # Create logger and GUI now
 #####################################
 
-wp = WREN_weighpad.weighpad_handler(1,3,states_queue)
+wfe_place = WREN_shared.mapped_channels.index('wfe')
+wp = WREN_weighpad.weighpad_handler(1,3,states_queue,wfe_place)
 wp.connect_WFE()
+
+n_place = WREN_shared.mapped_channels.index('n')
+np = WREN_revcounter.revcount_handler(10,5,states_queue,n_place)
+np.connect_N()
 
 logger_set = []
 logger_labels = []
