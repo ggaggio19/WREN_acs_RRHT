@@ -13,8 +13,10 @@ stm_di = [267223]*4
 stp_serial = 267223
 # weighpad
 weigh = [999999]
+# speed probe
+revcount = [888888]
 # Create full lists for logging (concatenate all previous lists, repeat those that have more than one kind of input)
-ch_map = hub_vi*2 + tc_i + dcm1_vi*2 + dcm2_vi*2 + stm_di + weigh
+ch_map = hub_vi*2 + tc_i + dcm1_vi*2 + dcm2_vi*2 + stm_di + weigh + revcount
 
 ch_states = [False]*len(ch_map)
 ch_data = [0.0]*len(ch_map)
@@ -33,7 +35,8 @@ states_spots_key = {
     "stp": "stp",
     "dc1": "dc1",
     "dc2": "dc2",
-    "wfe": "wfe"
+    "wfe": "wfe",
+    "n" : "n"
 }
 
 ''' Stepper states'''
@@ -58,15 +61,16 @@ logger_config = [[178866, 0, 'TAMB'],
                  [178866, 3, 'DP'],
                  [118257, 0, 'TTOT'],
                  [999999, 0, 'WFE'],
+                 [888888, 0, 'N'],
                  [178866, 4, 'FN1'],
                  [178866, 5, 'FN2'],
                  [178866, 6, 'FN3'],
                  [178866, 7, 'FN4']]
 
 
-ch_labels = ['TAMB', 'PAMB', 'PTOT', 'DP', 'TTOT','WFE', 'FN1', 'FN2', 'FN3', 'FN4']
+ch_labels = ['TAMB', 'PAMB', 'PTOT', 'DP', 'TTOT','WFE', 'N', 'FN1', 'FN2', 'FN3', 'FN4']
 
-mapped_channels = [178866, 178867, 178868, 178869, 118257, 'wfe', 178870, 178871, 178872, 178873]
+mapped_channels = [178866, 178867, 178868, 178869, 118257, 'wfe','n', 178870, 178871, 178872, 178873]
 mapped_ch_data = [0.0]*len(mapped_channels)
 
 ''' Postprocessing function definition'''
@@ -82,3 +86,6 @@ def applyLets(datain):
 
 ''' Weighpad connection flag'''
 WFE_IsConnected = False
+
+''' Revcount connection flag'''
+N_IsConnected = False

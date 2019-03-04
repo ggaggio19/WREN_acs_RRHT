@@ -65,7 +65,7 @@ class Gui(object):
         ''' Build the iterables to manage gui visualisation'''
         # Labels of two rows
         gui_labels_r1 = ['TAMB','PAMB','PTOT','DP','TTOT']
-        gui_labels_r2 = ['FN1','FN2','FN3','FN4', 'WFE']
+        gui_labels_r2 = ['FN1','FN2','FN3','FN4', 'WFE','N']
         # Define correspondence of channels to GUI slots
         gui_l_slot_r1 = [178866, 178867, 178868, 178869, 118257]
         gui_l_slot_r2 = [178870, 178871, 178872, 178873]
@@ -89,11 +89,13 @@ class Gui(object):
         self.lab13 = ttk.Label(self.mainframe,text = gui_labels_r2[2],background="red")
         self.lab14 = ttk.Label(self.mainframe,text = gui_labels_r2[3],background="red")
         self.lab15 = ttk.Label(self.mainframe,text = gui_labels_r2[4],background="red")
+        self.lab16 = ttk.Label(self.mainframe,text = gui_labels_r2[5],background="red")
         self.lab11.grid(column=2,row=0,sticky=tkinter.S)
         self.lab12.grid(column=2,row=1,sticky=tkinter.S)
         self.lab13.grid(column=2,row=2,sticky=tkinter.S)
         self.lab14.grid(column=2,row=3,sticky=tkinter.S)
         self.lab15.grid(column=2,row=4,sticky=tkinter.S)
+        self.lab16.grid(column=2,row=5,sticky=tkinter.S)
         
         ''' Create items to display data values'''
         self.DispVal01 = tkinter.StringVar()
@@ -106,6 +108,7 @@ class Gui(object):
         self.DispVal13 = tkinter.StringVar()
         self.DispVal14 = tkinter.StringVar()
         self.DispVal15 = tkinter.StringVar()
+        self.DispVal16 = tkinter.StringVar()
 
         # Initialise at 0
         self.DispVal01.set('%.2f' % 0)
@@ -118,6 +121,7 @@ class Gui(object):
         self.DispVal13.set('%.2f' % 0)
         self.DispVal14.set('%.2f' % 0)
         self.DispVal15.set('%.2f' % 0)
+        self.DispVal16.set('%.2f' % 0)
         
         ''' Create labels for values '''
         ttk.Label(self.mainframe,textvariable = self.DispVal01).grid(column=1,row=0,sticky=tkinter.S)
@@ -130,6 +134,7 @@ class Gui(object):
         ttk.Label(self.mainframe,textvariable = self.DispVal13).grid(column=3,row=2,sticky=tkinter.S)
         ttk.Label(self.mainframe,textvariable = self.DispVal14).grid(column=3,row=3,sticky=tkinter.S)
         ttk.Label(self.mainframe,textvariable = self.DispVal15).grid(column=3,row=4,sticky=tkinter.S)
+        ttk.Label(self.mainframe,textvariable = self.DispVal16).grid(column=3,row=5,sticky=tkinter.S)
 
         ''' Active buttons'''
         self.btn_start = ttk.Button(self.mainframe, text="Start transient log")
@@ -303,7 +308,7 @@ class Gui(object):
     def updater(self):
         valsinks = [self.DispVal01, self.DispVal02, self.DispVal03, self.DispVal04, self.DispVal05, self.DispVal11, self.DispVal12, self.DispVal13, self.DispVal14, self.DispVal15]
         labsinks = [self.lab01, self.lab02, self.lab03, self.lab04, self.lab05, self.lab11, self.lab12, self.lab13,
-                 self.lab14, self.lab15]
+                 self.lab14, self.lab15, self.lab16]
         sources = [(self.allvalues[0] * 5 * 44.444 - 61.111), (self.allvalues[1] * 36.2595 + 1.45038), (self.allvalues[2] * 36.2595 + 1.45038), (self.allvalues[3] * 8.05 - 4.0277), self.allvalues[16], self.allvalues[4] * 1000, self.allvalues[5], self.allvalues[6], self.allvalues[7], self.allvalues[len(self.allvalues)-1]]
         vcount = 0
         for _ in valsinks:
@@ -347,6 +352,12 @@ class Gui(object):
                     labsinks[9].config(background="green")
                 else:
                     labsinks[9].config(background="red")
+
+            elif posid == "n":
+                if cmd_spec:
+                    labsinks[10].config(background="green")
+                else:
+                    labsinks[10].config(background="red")
             else:
                 if cmd_spec:
                     print(posid)
