@@ -46,11 +46,17 @@ stepper_moving = False
 
 ''' DC motor 1 states'''
 DC1_pos_feedback = 0.0
+DC1_vel_feedback = 0.0
 DC1_pos_dem = 0.0
+DC1_cmd_connected = False
+DC1_enc_connected = False
 
 ''' DC motor 2 states'''
 DC2_pos_feedback = 0.0
+DC2_vel_feedback = 0.0
 DC2_pos_dem = 0.0
+DC2_cmd_connected = False
+DC2_enc_connected = False
 
 ''' Logger data channels configuration 
     structure is [serial, channel, label] '''

@@ -17,8 +17,9 @@ class REVReaderThread (threading.Thread):
         else:
             self.rate = rate
 
+        self.timestep = 1 / float(self.rate)
+
     def run(self):
-        self.timestep = 1/float(self.rate)
 
         while True:
             try:
@@ -91,9 +92,9 @@ class revcount_handler:
         self.queue = queue
         self.place = place
         self.isConnected = threading.Event()
+        self.reader = REVReaderThread(self.rate, self.comp, self.queue, self.isConnected, self.place)
 
 
     def connect_N(self):
         self.isConnected.clear()
-        self.reader = REVReaderThread(self.rate, self.comp, self.queue,self.isConnected, self.place)
         self.reader.start()

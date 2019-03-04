@@ -255,6 +255,10 @@ class Gui(object):
         self.dc1_goto_input = ttk.Entry(self.dc1frame,textvariable = self.dc1_gotopos)
         self.dc1_goto_input.grid(column=2,row=3,columnspan = 2, sticky=(tkinter.S,tkinter.E))
 
+        ''' Set buttons callbacks'''
+        self.btn_dc1_setzero.configure(command = self.dc1_setzero_command)
+        self.btn_dc1_gotopos.configure(command=self.dc1_gotopos_command)
+
         ''' Disable all inputs until DC1 is connected'''
         self.btn_dc1_setzero.state(['disabled'])
         self.btn_dc1_gotopos.state(['disabled'])
@@ -290,6 +294,10 @@ class Gui(object):
         self.dc2_gotopos = tkinter.IntVar()
         self.dc2_goto_input = ttk.Entry(self.dc2frame,textvariable = self.dc2_gotopos)
         self.dc2_goto_input.grid(column=2,row=3,columnspan = 2, sticky=(tkinter.S,tkinter.E))
+
+        ''' Set buttons callbacks'''
+        self.btn_dc2_setzero.configure(command = self.dc2_setzero_command)
+        self.btn_dc2_gotopos.configure(command=self.dc2_gotopos_command)
 
         ''' Disable all inputs until DC2 is connected'''
         self.btn_dc2_setzero.state(['disabled'])
@@ -504,3 +512,23 @@ class Gui(object):
 
     def LinkWFE_callback(self):
         self.WFEHandler.connect_WFE()
+
+    def dc1_setzero_command(self):
+        WREN_shared.DC1_pos_feedback = 0
+        WREN_shared.DC1_pos_dem = 0
+        self.dc1_gotopos.set('%.2f' % 0)
+        self.dc1_pos.set('%.2f' % 0)
+
+    def dc1_gotopos_command(self):
+        curr_target_position = self.dc1_gotopos.get()
+        WREN_shared.DC1_pos_dem = curr_target_position
+
+    def dc2_setzero_command(self):
+        WREN_shared.DC2_pos_feedback = 0
+        WREN_shared.DC2_pos_dem = 0
+        self.dc2_gotopos.set('%.2f' % 0)
+        self.dc2_pos.set('%.2f' % 0)
+
+    def dc2_gotopos_command(self):
+        curr_target_position = self.dc2_gotopos.get()
+        WREN_shared.DC2_pos_dem = curr_target_position

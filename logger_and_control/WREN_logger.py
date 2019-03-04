@@ -71,10 +71,13 @@ def savetofile(filename, data, path, labels = None):
                 csvfile.write(xstr)
         success = True
 
-def savetofile_P(filename, data, path, labels = None):
+def savetofile_P(filename, data, path= None, labels = None):
     if labels is None:
         print("Labels not specified - defaulting to dummy values")
         labels = 'a'*len(data[1])
+
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
 
     labels_str = str(labels[0])
     for lj in labels[2:]:
