@@ -1,9 +1,10 @@
 import os
-from LT_logger import LT_logger
+from WREN_logger import LT_logger
 from Phidget22.Devices.VoltageRatioInput import *
 from Phidget22.Devices.TemperatureSensor import *
 from Phidget22.Devices.Stepper import *
 from Phidget22.Devices.DCMotor import *
+from Phidget22.Devices.Encoder import *
 from Phidget22.PhidgetException import *
 from Phidget22.Phidget import *
 from Phidget22.Net import *
@@ -247,15 +248,12 @@ def StepperDetached(self):
 
 
 def PositionChangeHandler(self, position):
-    global stepper_position
-    print(position)
-    stepper_position = position
+    WREN_shared.stepper_position = position
 
 
 def StepperStoppedHandler(self):
-    global stepper_moving
     addtoQueue('stp','stopped')
-    stepper_moving = False
+    WREN_shared.stepper_moving = False
 
 def DCMotorAttached(e):
     try:
@@ -295,6 +293,45 @@ def DCMotorDetached(e):
         readin = sys.stdin.read(1)
         exit(1)
 
+
+def EncoderAttached(self):
+    try:
+        attached = self
+        print("\nAttach Event Detected (Information Below)")
+        print("===========================================")
+        print("Serial Number: %d" % attached.getDeviceSerialNumber())
+        print("Channel: %d" % attached.getChannel())
+        print("Channel Class: %s" % attached.getChannelClass())
+        print("\n")
+        if(not(self.getEnabled())):
+            self.setEnabled(1)
+
+    except PhidgetException as e:
+        print("Phidget Exception %i: %s" % (e.code, e.details))
+        print("Press Enter to Exit...\n")
+        readin = sys.stdin.read(1)
+        exit(1)
+
+
+def EncoderDetached(self):
+    detached = self
+    try:
+        print("\nDetach event on Port %d Channel %d" % (detached.getHubPort(), detached.getChannel()))
+    except PhidgetException as e:
+        print("Phidget Exception %i: %s" % (e.code, e.details))
+        print("Press Enter to Exit...\n")
+        readin = sys.stdin.read(1)
+        exit(1)
+
+
+def EncoderPositionChangeHandler(self, positionChange, timeChange, indexTriggered):
+    sn = self.getDeviceSerialNumber()
+    if sn==146593:
+        WREN_shared.DC1_pos_feedback = WREN_shared.DC1_pos_feedback + positionChange
+    elif sn== 146812:
+        WREN_shared.DC2_pos_feedback = WREN_shared.DC2_pos_feedback + positionChange
+
+
 ''' Create channels and do all work to initialise and open them'''
 print("Point 1")
 try:
@@ -309,6 +346,9 @@ try:
 
     # Create DC motors channels
     dc_channels = [DCMotor(), DCMotor()]
+
+    # Create encoders channels
+    enc_channels = [Encoder(), Encoder()]
 
     print("Point 2")
 except RuntimeError as e:
@@ -340,6 +380,14 @@ try:
         x.setChannel(-1)
         x.setDeviceSerialNumber(-1)
 
+    for x in enc_channels:
+        x.setOnAttachHandler(EncoderAttached)
+        x.setOnDetachHandler(EncoderDetached)
+        x.setOnErrorHandler(ErrorEvent)
+        x.setOnPositionChangeHandler(EncoderPositionChangeHandler)
+        x.setChannel(-1)
+        x.setDeviceSerialNumber(-1)
+
     stp_channel.setOnAttachHandler(StepperAttached)
     stp_channel.setOnDetachHandler(StepperDetached)
     stp_channel.setOnErrorHandler(ErrorEvent)
@@ -355,6 +403,8 @@ try:
     for x in t_channels:
         x.open()
     for x in dc_channels:
+        x.open()
+    for x in enc_channels:
         x.open()
 
     stp_channel.open()
